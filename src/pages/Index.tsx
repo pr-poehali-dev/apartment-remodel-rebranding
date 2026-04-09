@@ -1,74 +1,51 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
+/* ─── DATA ─── */
 const PORTFOLIO = [
   {
-    id: 1,
-    title: "Квартира на Невском",
-    type: "Квартира",
-    area: "87 м²",
-    duration: "45 дней",
-    img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/c4acd812-2a24-49be-b814-ee90a3c494b4.jpg",
-    tag: "apartment",
+    id: 1, tag: "apartment",
+    num: "01",
+    title: "Квартира на Пречистенке",
+    type: "Жилой интерьер",
+    area: "112 м²", duration: "52 дня",
+    img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/24eeb47a-0d46-4c11-9ecd-51cbb4cb6a17.jpg",
   },
   {
-    id: 2,
+    id: 2, tag: "kitchen",
+    num: "02",
     title: "Кухня в стиле loft",
     type: "Кухня",
-    area: "22 м²",
-    duration: "18 дней",
-    img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/15662b00-adcf-4c79-9942-4a3d18d63268.jpg",
-    tag: "kitchen",
+    area: "22 м²", duration: "18 дней",
+    img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/7ff66fa8-acfe-4369-a7d0-2fcd9c6a7d95.jpg",
   },
   {
-    id: 3,
+    id: 3, tag: "bathroom",
+    num: "03",
     title: "Ванная комната Premium",
-    type: "Ванная",
-    area: "14 м²",
-    duration: "21 день",
+    type: "Санузел",
+    area: "14 м²", duration: "21 день",
     img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/e2677697-0a8c-4001-a457-85cd39ead2b7.jpg",
-    tag: "bathroom",
   },
   {
-    id: 4,
+    id: 4, tag: "office",
+    num: "04",
     title: "Офис технологической компании",
-    type: "Офис",
-    area: "320 м²",
-    duration: "60 дней",
-    img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/9a54c10b-83d0-4199-8e09-703d64c1fd9f.jpg",
-    tag: "office",
+    type: "Коммерческий интерьер",
+    area: "320 м²", duration: "60 дней",
+    img: "https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/ef3caff6-630d-4ddc-8de6-42f1ba500036.jpg",
   },
 ];
 
 const REVIEWS = [
-  {
-    name: "Анастасия В.",
-    role: "Владелец квартиры",
-    text: "Команда выполнила ремонт точно в срок. Качество отделки превзошло все ожидания — каждая деталь продумана до мелочей. Рекомендую всем!",
-    stars: 5,
-    avatar: "АВ",
-  },
-  {
-    name: "Дмитрий К.",
-    role: "Директор компании",
-    text: "Доверили ремонт офиса и не пожалели. Работали быстро, чисто, без лишних вопросов. Итог — современный стильный офис, который впечатляет клиентов.",
-    stars: 5,
-    avatar: "ДК",
-  },
-  {
-    name: "Марина С.",
-    role: "Дизайнер интерьера",
-    text: "Сотрудничаем как подрядчики уже 3 года. Мастера умеют воплощать самые сложные решения, понимают дизайн и не искажают авторский замысел.",
-    stars: 5,
-    avatar: "МС",
-  },
-  {
-    name: "Алексей П.",
-    role: "Собственник бизнеса",
-    text: "Отличное соотношение цена/качество по тарифу «Стандарт». Сметы не раздуваются, лишнего не навязывают. Буду обращаться снова.",
-    stars: 5,
-    avatar: "АП",
-  },
+  { name: "Анастасия Воронова", role: "Частный клиент", avatar: "АВ",
+    text: "Ремонт выполнен точно в срок. Качество отделки превзошло ожидания — каждая деталь продумана. Команда работает как часы." },
+  { name: "Дмитрий Ковалёв", role: "CEO, Ковалёв Групп", avatar: "ДК",
+    text: "Доверили ремонт офиса и не пожалели. Работали чисто, без вопросов. Итог — пространство, которое впечатляет партнёров." },
+  { name: "Марина Соловьёва", role: "Дизайнер интерьера", avatar: "МС",
+    text: "Сотрудничаем три года. Мастера умеют воплощать сложные авторские решения — не искажают замысел и предлагают улучшения." },
+  { name: "Алексей Петров", role: "Инвестор в недвижимость", avatar: "АП",
+    text: "Прозрачная смета, никакого раздувания бюджета. Уже четыре объекта сдали — всегда в срок и в рамках договора." },
 ];
 
 const TEAM = [
@@ -80,427 +57,208 @@ const TEAM = [
 
 const TARIFFS = [
   {
-    name: "Эконом",
-    price: "от 3 500",
-    unit: "₽/м²",
-    popular: false,
-    features: [
-      "Выравнивание стен и потолков",
-      "Укладка напольных покрытий",
-      "Покраска/поклейка обоев",
-      "Монтаж дверей",
-      "Гарантия 1 год",
-    ],
-    highlight: false,
+    name: "Базовый", price: "от 3 500", popular: false,
+    features: ["Выравнивание стен и потолков", "Укладка напольных покрытий", "Покраска / поклейка обоев", "Монтаж дверей", "Гарантия 1 год"],
   },
   {
-    name: "Стандарт",
-    price: "от 6 000",
-    unit: "₽/м²",
-    popular: true,
-    features: [
-      "Всё из пакета «Эконом»",
-      "Дизайн-проект в подарок",
-      "Сантехнические работы",
-      "Электромонтаж",
-      "Гарантия 2 года",
-    ],
-    highlight: true,
+    name: "Стандарт", price: "от 6 000", popular: true,
+    features: ["Всё из пакета «Базовый»", "Дизайн-проект в подарок", "Сантехнические работы", "Электромонтаж", "Гарантия 2 года"],
   },
   {
-    name: "Премиум",
-    price: "от 12 000",
-    unit: "₽/м²",
-    popular: false,
-    features: [
-      "Всё из пакета «Стандарт»",
-      "Авторский дизайн-проект",
-      "Умный дом (базовый)",
-      "Закупка материалов",
-      "Гарантия 3 года",
-    ],
-    highlight: false,
+    name: "Премиум", price: "от 12 000", popular: false,
+    features: ["Всё из пакета «Стандарт»", "Авторский дизайн-проект", "Умный дом (базовый)", "Закупка материалов", "Гарантия 3 года"],
   },
 ];
 
 const BLOG = [
-  {
-    title: "Как выбрать отделочные материалы и не потратить лишнего",
-    date: "28 марта 2026",
-    tag: "Советы",
-    read: "5 мин",
-  },
-  {
-    title: "Ремонт под ключ vs частичный: что выгоднее в 2026 году",
-    date: "15 марта 2026",
-    tag: "Аналитика",
-    read: "7 мин",
-  },
-  {
-    title: "Топ-5 ошибок при ремонте ванной комнаты",
-    date: "3 марта 2026",
-    tag: "Ошибки",
-    read: "4 мин",
-  },
+  { title: "Как выбрать отделочные материалы и не потратить лишнего", date: "28 марта 2026", tag: "Советы", read: "5 мин" },
+  { title: "Ремонт под ключ vs частичный: что выгоднее в 2026 году", date: "15 марта 2026", tag: "Аналитика", read: "7 мин" },
+  { title: "Топ-5 ошибок при ремонте ванной комнаты", date: "3 марта 2026", tag: "Опыт", read: "4 мин" },
 ];
 
-const VACANCIES = [
-  { title: "Мастер-отделочник", salary: "80 000–120 000 ₽", type: "Полная занятость" },
-  { title: "Прораб", salary: "100 000–150 000 ₽", type: "Полная занятость" },
-  { title: "Менеджер по продажам", salary: "60 000–90 000 ₽", type: "Гибкий график" },
+const FILTERS = [
+  { key: "all", label: "Все" },
+  { key: "apartment", label: "Квартиры" },
+  { key: "kitchen", label: "Кухни" },
+  { key: "bathroom", label: "Ванные" },
+  { key: "office", label: "Офисы" },
 ];
 
+const NAV = [
+  { href: "#portfolio", label: "Работы" },
+  { href: "#tariffs",   label: "Тарифы" },
+  { href: "#reviews",   label: "Отзывы" },
+  { href: "#team",      label: "Команда" },
+  { href: "#blog",      label: "Блог" },
+  { href: "#about",     label: "О нас" },
+  { href: "#contacts",  label: "Контакты" },
+];
+
+/* ─── COMPONENT ─── */
 export default function Index() {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [filter, setFilter] = useState("all");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const filters = [
-    { key: "all", label: "Все работы" },
-    { key: "apartment", label: "Квартиры" },
-    { key: "kitchen", label: "Кухни" },
-    { key: "bathroom", label: "Ванные" },
-    { key: "office", label: "Офисы" },
-  ];
-
-  const filtered =
-    activeFilter === "all"
-      ? PORTFOLIO
-      : PORTFOLIO.filter((p) => p.tag === activeFilter);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const fn = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const navLinks = [
-    { href: "#portfolio", label: "Портфолио" },
-    { href: "#tariffs", label: "Тарифы" },
-    { href: "#reviews", label: "Отзывы" },
-    { href: "#team", label: "Команда" },
-    { href: "#blog", label: "Блог" },
-    { href: "#promo", label: "Акции" },
-    { href: "#about", label: "О нас" },
-    { href: "#contacts", label: "Контакты" },
-  ];
+  const filtered = filter === "all" ? PORTFOLIO : PORTFOLIO.filter(p => p.tag === filter);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
 
-      {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b border-border shadow-sm" : "bg-transparent"}`}>
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-              <span className="font-oswald font-bold text-white text-sm">М</span>
+      {/* ═══ NAV ═══ */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-white/96 backdrop-blur-md border-b border-border" : "bg-transparent"}`}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+
+          {/* Logo */}
+          <a href="#" className="flex items-center gap-3">
+            <div className="w-7 h-7 bg-primary flex items-center justify-center">
+              <span className="font-ibm font-semibold text-white text-xs tracking-widest">М</span>
             </div>
-            <span className="font-oswald font-bold text-xl tracking-widest text-foreground">МАСТЕР</span>
+            <span className="label-caps text-foreground tracking-[0.18em]">Мастер</span>
           </a>
 
-          <div className="hidden lg:flex items-center gap-6">
-            {navLinks.map((l) => (
-              <a key={l.href} href={l.href} className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors font-golos">
-                {l.label}
-              </a>
+          {/* Desktop links */}
+          <div className="hidden lg:flex items-center gap-8">
+            {NAV.map(l => (
+              <a key={l.href} href={l.href} className="nav-lnk label-caps text-muted-foreground hover:text-foreground transition-colors">{l.label}</a>
             ))}
           </div>
 
-          <a href="#contacts" className="hidden lg:flex items-center gap-2 bg-primary text-white font-golos font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition-all glow-red text-sm">
-            <Icon name="Phone" size={14} />
-            Заказать звонок
+          <a href="#contacts" className="hidden lg:inline-flex items-center gap-2 btn-red px-5 py-2.5 label-caps text-white">
+            <span>Связаться</span>
           </a>
 
-          <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden text-foreground p-2">
-            <Icon name={menuOpen ? "X" : "Menu"} size={24} />
+          <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2">
+            <Icon name={menuOpen ? "X" : "Menu"} size={20} />
           </button>
         </div>
 
         {menuOpen && (
-          <div className="lg:hidden bg-white border-t border-border px-4 py-4 flex flex-col gap-3">
-            {navLinks.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} className="text-muted-foreground hover:text-foreground py-2 font-golos transition-colors">
-                {l.label}
-              </a>
+          <div className="lg:hidden bg-white border-t border-border px-6 py-6 flex flex-col gap-5">
+            {NAV.map(l => (
+              <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} className="label-caps text-muted-foreground hover:text-foreground">{l.label}</a>
             ))}
-            <a href="#contacts" className="bg-primary text-white font-semibold px-4 py-3 rounded-lg text-center mt-2">
-              Заказать звонок
-            </a>
+            <a href="#contacts" className="btn-red px-6 py-3 text-center label-caps text-white mt-2">Связаться</a>
           </div>
         )}
       </nav>
 
-      {/* HERO */}
-      <section className="relative min-h-screen flex items-center overflow-hidden grid-bg bg-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="animate-pulse-slow absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/8 blur-3xl" />
-          <div className="animate-pulse-slow absolute bottom-0 right-0 w-80 h-80 rounded-full bg-primary/6 blur-3xl" style={{ animationDelay: "2s" }} />
+      {/* ═══ HERO ═══ */}
+      <section ref={heroRef} className="relative min-h-screen flex flex-col justify-end overflow-hidden bg-white">
+
+        {/* Full-bleed image right half */}
+        <div className="absolute inset-y-0 right-0 w-full lg:w-[55%] img-zoom anim-reveal d1">
+          <img
+            src="https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/24eeb47a-0d46-4c11-9ecd-51cbb4cb6a17.jpg"
+            alt="Интерьер"
+            className="w-full h-full object-cover"
+          />
+          {/* Gradient overlay so text is readable */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent lg:via-white/30" />
         </div>
 
-        <div className="animate-float absolute top-24 right-[12%] w-14 h-14 border border-primary/20 rounded-xl rotate-12 opacity-60" />
-        <div className="animate-float-delayed absolute top-40 right-[6%] w-6 h-6 bg-primary/15 rounded-full" />
-        <div className="animate-float absolute bottom-32 left-[8%] w-10 h-10 border border-primary/20 rounded-full opacity-50" />
+        {/* Text content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full pb-20 pt-32">
+          <p className="label-caps text-primary mb-6 anim-up d2">Ремонт под ключ · Москва</p>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-12 grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/20 text-primary px-4 py-1.5 rounded-full text-sm font-golos mb-6 animate-slide-up stagger-1">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              Принимаем заявки — срок сдачи от 14 дней
-            </div>
+          <h1 className="display text-[clamp(3.5rem,9vw,8rem)] text-foreground mb-10 anim-up d3">
+            Пространство,<br />
+            <em className="text-primary not-italic">которое</em><br />
+            говорит само.
+          </h1>
 
-            <h1 className="font-oswald text-5xl md:text-7xl font-bold leading-none mb-6 animate-slide-up stagger-2 text-foreground">
-              РЕМОНТ,<br />
-              <span className="text-primary text-glow-red">КОТОРЫЙ</span><br />
-              ГОВОРИТ<br />
-              САМ ЗА СЕБЯ
-            </h1>
+          <p className="font-ibm font-light text-muted-foreground text-base max-w-sm leading-relaxed mb-10 anim-up d4">
+            Квартиры, офисы, коммерческие помещения. Фиксированная смета — никаких сюрпризов. Гарантия до трёх лет.
+          </p>
 
-            <p className="font-golos text-muted-foreground text-lg mb-8 max-w-md leading-relaxed animate-slide-up stagger-3">
-              Профессиональный ремонт квартир, офисов и коммерческих помещений.
-              Фиксированная смета, гарантия результата, сдача в срок.
-            </p>
-
-            <div className="flex flex-wrap gap-4 animate-slide-up stagger-4">
-              <a href="#contacts" className="flex items-center gap-2 bg-primary text-white font-golos font-bold px-8 py-4 rounded-xl hover:bg-primary/90 transition-all glow-red text-base">
-                Получить расчёт
-                <Icon name="ArrowRight" size={18} />
-              </a>
-              <a href="#portfolio" className="flex items-center gap-2 border border-border text-foreground font-golos px-8 py-4 rounded-xl hover:border-primary/40 transition-all text-base bg-white">
-                <Icon name="Play" size={16} className="text-primary" />
-                Смотреть работы
-              </a>
-            </div>
-
-            <div className="flex gap-8 mt-12 animate-slide-up stagger-5">
-              {[
-                { val: "800+", label: "Проектов" },
-                { val: "12", label: "Лет опыта" },
-                { val: "98%", label: "Довольных клиентов" },
-              ].map((s) => (
-                <div key={s.label}>
-                  <div className="font-oswald text-3xl font-bold text-primary">{s.val}</div>
-                  <div className="font-golos text-sm text-muted-foreground">{s.label}</div>
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-4 anim-up d5">
+            <a href="#contacts" className="btn-red inline-flex items-center gap-3 px-8 py-4 label-caps text-white">
+              <span>Получить расчёт</span>
+              <Icon name="ArrowRight" size={14} />
+            </a>
+            <a href="#portfolio" className="btn-outline inline-flex items-center gap-3 px-8 py-4 label-caps">
+              <span>Смотреть работы</span>
+            </a>
           </div>
 
-          <div className="relative hidden lg:block animate-slide-up stagger-3">
-            <div className="relative w-full aspect-square max-w-lg ml-auto">
-              <img
-                src="https://cdn.poehali.dev/projects/b34afd52-2476-4a98-81d0-faeca22a9cc8/files/c4acd812-2a24-49be-b814-ee90a3c494b4.jpg"
-                alt="Ремонт"
-                className="w-full h-full object-cover rounded-2xl"
-              />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-black/8" />
-
-              <div className="absolute -bottom-4 -left-8 bg-white border border-border rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Icon name="Shield" size={20} className="text-primary" />
-                </div>
-                <div>
-                  <div className="font-oswald text-foreground font-semibold text-sm">Гарантия до 3 лет</div>
-                  <div className="font-golos text-muted-foreground text-xs">На все виды работ</div>
-                </div>
+          {/* Stats strip */}
+          <div className="flex gap-12 mt-16 pt-10 border-t border-border anim-up d6">
+            {[
+              { v: "800+", l: "проектов" },
+              { v: "12",   l: "лет опыта" },
+              { v: "98%",  l: "рекомендуют" },
+            ].map(s => (
+              <div key={s.l}>
+                <div className="font-cormorant text-4xl font-light text-primary leading-none">{s.v}</div>
+                <div className="label-caps text-muted-foreground mt-1">{s.l}</div>
               </div>
-
-              <div className="absolute -top-4 -right-4 bg-white border border-border rounded-xl px-4 py-2 flex items-center gap-2 shadow-lg">
-                <Icon name="Clock" size={16} className="text-primary" />
-                <span className="font-golos text-foreground text-sm font-semibold">Сдача в срок</span>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-pulse-slow">
-          <span className="font-golos text-xs text-muted-foreground">Скролл</span>
-          <Icon name="ChevronDown" size={20} className="text-muted-foreground" />
         </div>
       </section>
 
-      {/* TICKER */}
-      <div className="bg-primary py-3 overflow-hidden">
-        <div className="ticker-inner flex gap-12 text-white font-oswald font-semibold text-sm tracking-wider">
-          {Array(6).fill(["РЕМОНТ ПОД КЛЮЧ", "ДИЗАЙН-ПРОЕКТ", "СДАЧА В СРОК", "ГАРАНТИЯ 3 ГОДА", "800+ ОБЪЕКТОВ", "БЕСПЛАТНЫЙ ЗАМЕР"]).flat().map((t, i) => (
-            <span key={i} className="shrink-0">• {t}</span>
+      {/* ═══ TICKER ═══ */}
+      <div className="bg-primary py-3.5 overflow-hidden">
+        <div className="ticker-inner">
+          {Array(8).fill(["Ремонт под ключ", "Дизайн-проект", "Сдача в срок", "Гарантия 3 года", "800+ объектов", "Бесплатный замер"]).flat().map((t, i) => (
+            <span key={i} className="label-caps text-white/90 px-8">— {t}</span>
           ))}
         </div>
       </div>
 
-      {/* PORTFOLIO */}
-      <section id="portfolio" className="py-24 max-w-7xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      {/* ═══ PORTFOLIO ═══ */}
+      <section id="portfolio" className="py-32 max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8">
           <div>
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Наши работы</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">ПОРТФОЛИО</h2>
+            <p className="label-caps text-primary mb-3">Наши работы</p>
+            <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)] text-foreground">Избранные<br />проекты</h2>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {filters.map((f) => (
+          <div className="flex flex-wrap gap-1">
+            {FILTERS.map(f => (
               <button
                 key={f.key}
-                onClick={() => setActiveFilter(f.key)}
-                className={`px-4 py-2 rounded-lg font-golos text-sm transition-all ${activeFilter === f.key ? "bg-primary text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}
-              >
-                {f.label}
-              </button>
+                onClick={() => setFilter(f.key)}
+                className={`px-5 py-2 label-caps transition-all duration-300 ${filter === f.key ? "bg-foreground text-white" : "text-muted-foreground hover:text-foreground border border-transparent hover:border-border"}`}
+              >{f.label}</button>
             ))}
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {filtered.map((p) => (
-            <div key={p.id} className="portfolio-card relative overflow-hidden rounded-2xl bg-card border border-border group cursor-pointer card-hover">
-              <div className="overflow-hidden aspect-[4/3]">
-                <img src={p.img} alt={p.title} className="w-full h-full object-cover transition-transform duration-500" />
+        <div className="grid md:grid-cols-2 gap-px bg-border">
+          {filtered.map(p => (
+            <div key={p.id} className="group relative bg-white overflow-hidden cursor-pointer">
+              <div className="img-zoom aspect-[4/3]">
+                <img src={p.img} alt={p.title} className="w-full h-full object-cover" />
               </div>
-              <div className="portfolio-overlay absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent opacity-0 transition-opacity duration-300 flex flex-col justify-end p-6">
-                <h3 className="font-oswald text-white text-2xl font-bold">{p.title}</h3>
-                <div className="flex gap-4 mt-2">
-                  <span className="font-golos text-sm text-red-300">{p.area}</span>
-                  <span className="font-golos text-sm text-white/70">{p.duration}</span>
-                </div>
-              </div>
-              <div className="p-5 bg-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-oswald text-foreground text-xl font-semibold">{p.title}</h3>
-                    <p className="font-golos text-muted-foreground text-sm mt-1">{p.type} · {p.area} · {p.duration}</p>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary transition-colors">
-                    <Icon name="ArrowUpRight" size={18} className="text-muted-foreground group-hover:text-white transition-colors" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* TARIFFS */}
-      <section id="tariffs" className="py-24 bg-muted/50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Прозрачные цены</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">ТАРИФЫ</h2>
-            <p className="font-golos text-muted-foreground mt-4 max-w-lg mx-auto">Фиксированная стоимость, без скрытых доплат. Выберите подходящий пакет или обсудите индивидуальные условия.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {TARIFFS.map((t) => (
-              <div key={t.name} className={`relative rounded-2xl border-2 bg-white p-8 card-hover flex flex-col ${t.highlight ? "border-primary glow-red" : "border-border"}`}>
-                {t.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white font-oswald font-bold px-6 py-1.5 rounded-full text-sm tracking-wider">
-                    ПОПУЛЯРНЫЙ
-                  </div>
-                )}
-                <div className="flex-1">
-                  <div className="font-oswald text-2xl font-bold text-foreground mb-1">{t.name}</div>
-                  <div className="flex items-baseline gap-1 mb-6">
-                    <span className="font-oswald text-4xl font-bold text-primary">{t.price}</span>
-                    <span className="font-golos text-muted-foreground text-sm">{t.unit}</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    {t.features.map((f) => (
-                      <li key={f} className="flex items-start gap-3 font-golos text-sm text-foreground">
-                        <Icon name="Check" size={16} className="text-primary mt-0.5 shrink-0" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <button className={`w-full py-3 rounded-xl font-golos font-semibold transition-all ${t.highlight ? "bg-primary text-white hover:bg-primary/90" : "border border-primary text-primary hover:bg-primary hover:text-white"}`}>
-                  Выбрать пакет
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-center font-golos text-muted-foreground text-sm mt-8">
-            Нужен индивидуальный расчёт? <a href="#contacts" className="text-primary hover:underline">Свяжитесь с нами</a>
-          </p>
-        </div>
-      </section>
-
-      {/* REVIEWS */}
-      <section id="reviews" className="py-24 max-w-7xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Клиенты о нас</span>
-          <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">ОТЗЫВЫ</h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {REVIEWS.map((r, i) => (
-            <div key={i} className="bg-white border border-border rounded-2xl p-8 card-hover">
-              <div className="flex gap-1 mb-4">
-                {Array(r.stars).fill(0).map((_, j) => (
-                  <Icon key={j} name="Star" size={16} className="text-primary" />
-                ))}
-              </div>
-              <p className="font-golos text-foreground leading-relaxed mb-6">"{r.text}"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="font-oswald text-primary font-bold text-sm">{r.avatar}</span>
-                </div>
+              {/* Hover overlay */}
+              <div className="port-ov absolute inset-0 bg-foreground/85 flex flex-col justify-between p-8">
+                <span className="label-caps text-white/50">{p.num}</span>
                 <div>
-                  <div className="font-golos font-semibold text-foreground">{r.name}</div>
-                  <div className="font-golos text-muted-foreground text-xs">{r.role}</div>
+                  <p className="label-caps text-primary mb-2">{p.type}</p>
+                  <h3 className="font-cormorant text-3xl font-light text-white leading-tight mb-4">{p.title}</h3>
+                  <div className="flex gap-6">
+                    <span className="label-caps text-white/60">{p.area}</span>
+                    <span className="label-caps text-white/60">{p.duration}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* TEAM */}
-      <section id="team" className="py-24 bg-muted/40">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Наши специалисты</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">КОМАНДА</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM.map((m, i) => (
-              <div key={i} className="bg-white border border-border rounded-2xl p-6 text-center card-hover group">
-                <div className="w-20 h-20 bg-primary/8 rounded-2xl flex items-center justify-center mx-auto mb-4 text-4xl group-hover:bg-primary/15 transition-colors">
-                  {m.emoji}
-                </div>
-                <h3 className="font-oswald text-foreground font-bold text-lg">{m.name}</h3>
-                <p className="font-golos text-primary text-sm mt-1">{m.role}</p>
-                <div className="mt-3 inline-flex items-center gap-1.5 bg-muted px-3 py-1 rounded-full">
-                  <Icon name="Briefcase" size={12} className="text-muted-foreground" />
-                  <span className="font-golos text-xs text-muted-foreground">Опыт: {m.exp}</span>
-                </div>
+              {/* Number label (always visible) */}
+              <div className="absolute top-5 left-5 group-hover:opacity-0 transition-opacity">
+                <span className="label-caps text-white/70 bg-black/30 px-2 py-1">{p.num}</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* BLOG */}
-      <section id="blog" className="py-24 max-w-7xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-          <div>
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Полезное</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">БЛОГ</h2>
-          </div>
-          <a href="#" className="font-golos text-primary text-sm hover:underline flex items-center gap-1">
-            Все статьи <Icon name="ArrowRight" size={14} />
-          </a>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {BLOG.map((b, i) => (
-            <div key={i} className="bg-white border border-border rounded-2xl p-6 card-hover cursor-pointer group">
-              <div className="flex items-center justify-between mb-4">
-                <span className="bg-primary/10 text-primary font-golos text-xs px-3 py-1 rounded-full">{b.tag}</span>
-                <span className="font-golos text-xs text-muted-foreground flex items-center gap-1">
-                  <Icon name="Clock" size={12} />{b.read}
-                </span>
-              </div>
-              <h3 className="font-oswald text-foreground text-lg font-semibold leading-snug mb-4 group-hover:text-primary transition-colors">{b.title}</h3>
-              <div className="flex items-center justify-between">
-                <span className="font-golos text-xs text-muted-foreground">{b.date}</span>
+              {/* Caption below */}
+              <div className="p-6 border-t border-border flex items-center justify-between">
+                <div>
+                  <h3 className="font-ibm font-medium text-foreground text-base">{p.title}</h3>
+                  <p className="label-caps text-muted-foreground mt-1">{p.type} · {p.area}</p>
+                </div>
                 <Icon name="ArrowUpRight" size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
             </div>
@@ -508,152 +266,265 @@ export default function Index() {
         </div>
       </section>
 
-      {/* PROMO */}
-      <section id="promo" className="py-16 bg-muted/50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Выгодные предложения</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">АКЦИИ</h2>
-          </div>
+      {/* ═══ DIVIDER ═══ */}
+      <div className="h-px bg-border mx-6 lg:mx-12" />
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white border-2 border-primary/30 rounded-2xl p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-primary text-white font-oswald font-bold text-sm px-3 py-1 rounded-full">
-                До 30 апреля
-              </div>
-              <Icon name="Gift" size={36} className="text-primary mb-4" />
-              <h3 className="font-oswald text-foreground text-2xl font-bold mb-2">Дизайн-проект в подарок</h3>
-              <p className="font-golos text-muted-foreground">При заказе ремонта от 50 м² — разработка дизайн-проекта бесплатно. Экономия до 60 000 ₽.</p>
-              <a href="#contacts" className="mt-6 inline-flex items-center gap-2 bg-primary text-white font-golos font-semibold px-6 py-3 rounded-xl hover:bg-primary/90 transition-all">
-                Узнать подробности <Icon name="ArrowRight" size={16} />
-              </a>
-            </div>
-
-            <div className="bg-white border-2 border-border rounded-2xl p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-secondary text-foreground font-oswald font-bold text-sm px-3 py-1 rounded-full">
-                Постоянно
-              </div>
-              <Icon name="Percent" size={36} className="text-primary mb-4" />
-              <h3 className="font-oswald text-foreground text-2xl font-bold mb-2">Скидка 10% повторным клиентам</h3>
-              <p className="font-golos text-muted-foreground">Обратились к нам снова или привели друга — получите скидку 10% на следующий заказ.</p>
-              <a href="#contacts" className="mt-6 inline-flex items-center gap-2 border border-primary text-primary font-golos font-semibold px-6 py-3 rounded-xl hover:bg-primary hover:text-white transition-all">
-                Узнать подробности <Icon name="ArrowRight" size={16} />
-              </a>
-            </div>
-          </div>
+      {/* ═══ TARIFFS ═══ */}
+      <section id="tariffs" className="py-32 max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="mb-16">
+          <p className="label-caps text-primary mb-3">Тарифы</p>
+          <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)]">Прозрачно<br />и без сюрпризов</h2>
         </div>
+
+        <div className="grid md:grid-cols-3 gap-px bg-border">
+          {TARIFFS.map(t => (
+            <div key={t.name} className={`relative flex flex-col p-10 lift ${t.popular ? "bg-foreground text-white" : "bg-white"}`}>
+              {t.popular && (
+                <span className="label-caps text-primary mb-6">Популярный выбор</span>
+              )}
+              <div className={`label-caps mb-2 ${t.popular ? "text-white/50" : "text-muted-foreground"}`}>{t.name}</div>
+              <div className={`font-cormorant text-5xl font-light mb-8 ${t.popular ? "text-white" : "text-foreground"}`}>{t.price}<span className={`text-xl ml-1 ${t.popular ? "text-white/50" : "text-muted-foreground"}`}>₽/м²</span></div>
+              
+              <ul className="space-y-3 flex-1 mb-10">
+                {t.features.map(f => (
+                  <li key={f} className={`flex items-start gap-3 font-ibm font-light text-sm ${t.popular ? "text-white/80" : "text-muted-foreground"}`}>
+                    <span className={`mt-1 shrink-0 w-1 h-1 rounded-full ${t.popular ? "bg-primary" : "bg-primary"}`} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <button className={`w-full py-4 label-caps transition-all ${t.popular ? "bg-primary text-white hover:bg-primary/90" : "border border-foreground text-foreground hover:bg-foreground hover:text-white"}`}>
+                Выбрать пакет
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <p className="font-ibm font-light text-muted-foreground text-sm mt-8">
+          Нужен индивидуальный расчёт?{" "}
+          <a href="#contacts" className="text-primary underline underline-offset-4">Напишите нам</a>
+        </p>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" className="py-24 max-w-7xl mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Кто мы</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2 mb-6">О НАС</h2>
-            <p className="font-golos text-muted-foreground leading-relaxed mb-6">
-              Компания МАСТЕР работает на рынке ремонтных услуг с 2014 года. За это время мы выполнили более 800 проектов — от небольших косметических ремонтов до полной реконструкции коммерческих помещений.
-            </p>
-            <p className="font-golos text-muted-foreground leading-relaxed mb-8">
-              Наш принцип прост: фиксированная смета, прозрачный процесс, сдача точно в срок. Мы не берём аванс больше 30%, а финальный расчёт только после вашей приёмки.
-            </p>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: "Award", text: "Лицензированные специалисты" },
-                { icon: "TrendingUp", text: "Работаем с 2014 года" },
-                { icon: "Shield", text: "Гарантия на все работы" },
-                { icon: "FileText", text: "Официальный договор" },
-              ].map((f) => (
-                <div key={f.text} className="flex items-center gap-3 bg-white border border-border rounded-xl p-4">
-                  <Icon name={f.icon} size={20} className="text-primary shrink-0" />
-                  <span className="font-golos text-sm text-foreground">{f.text}</span>
-                </div>
-              ))}
-            </div>
+      {/* ═══ REVIEWS ═══ */}
+      <section id="reviews" className="py-32 bg-muted/40">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="mb-16">
+            <p className="label-caps text-primary mb-3">Отзывы</p>
+            <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)]">Говорят<br />клиенты</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { val: "800+", label: "Проектов завершено" },
-              { val: "12", label: "Лет на рынке" },
-              { val: "98%", label: "Клиентов рекомендуют нас" },
-              { val: "3", label: "Года гарантии (Премиум)" },
-            ].map((s) => (
-              <div key={s.label} className="bg-white border border-border rounded-2xl p-6 text-center card-hover">
-                <div className="font-oswald text-4xl font-bold text-primary mb-2">{s.val}</div>
-                <div className="font-golos text-muted-foreground text-sm">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* VACANCIES */}
-      <section id="vacancies" className="py-16 bg-muted/40">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Присоединяйтесь</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2">ВАКАНСИИ</h2>
-          </div>
-          <div className="space-y-4">
-            {VACANCIES.map((v, i) => (
-              <div key={i} className="bg-white border border-border rounded-2xl p-6 flex items-center justify-between card-hover group cursor-pointer">
-                <div>
-                  <h3 className="font-oswald text-foreground text-xl font-semibold group-hover:text-primary transition-colors">{v.title}</h3>
-                  <div className="flex gap-4 mt-2">
-                    <span className="font-golos text-primary text-sm font-semibold">{v.salary}</span>
-                    <span className="font-golos text-muted-foreground text-sm">{v.type}</span>
-                  </div>
+          <div className="grid md:grid-cols-2 gap-px bg-border">
+            {REVIEWS.map((r, i) => (
+              <div key={i} className="bg-white p-10 lift flex flex-col gap-6">
+                <div className="flex gap-1">
+                  {Array(5).fill(0).map((_, j) => (
+                    <Icon key={j} name="Star" size={12} className="text-primary" />
+                  ))}
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary transition-colors">
-                  <Icon name="ArrowUpRight" size={18} className="text-muted-foreground group-hover:text-white transition-colors" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACTS */}
-      <section id="contacts" className="py-24 max-w-7xl mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          <div>
-            <span className="text-primary font-golos text-sm font-semibold tracking-wider uppercase">Связаться с нами</span>
-            <h2 className="font-oswald text-4xl md:text-5xl font-bold text-foreground mt-2 mb-6">КОНТАКТЫ</h2>
-            <p className="font-golos text-muted-foreground mb-8">Оставьте заявку и мы свяжемся с вами в течение 15 минут. Бесплатный выезд мастера на замер.</p>
-            <div className="space-y-4 mb-8">
-              {[
-                { icon: "Phone", label: "Телефон", val: "+7 (999) 123-45-67" },
-                { icon: "Mail", label: "Email", val: "info@master-remont.ru" },
-                { icon: "MapPin", label: "Адрес", val: "Москва, ул. Строителей, 15" },
-                { icon: "Clock", label: "Режим работы", val: "Пн–Вс, 8:00–20:00" },
-              ].map((c) => (
-                <div key={c.label} className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                    <Icon name={c.icon} size={18} className="text-primary" />
+                <p className="font-cormorant text-2xl font-light text-foreground leading-snug">"{r.text}"</p>
+                <div className="flex items-center gap-4 pt-4 border-t border-border mt-auto">
+                  <div className="w-9 h-9 bg-primary/10 flex items-center justify-center">
+                    <span className="label-caps text-primary text-[0.6rem]">{r.avatar}</span>
                   </div>
                   <div>
-                    <div className="font-golos text-xs text-muted-foreground">{c.label}</div>
-                    <div className="font-golos text-foreground font-semibold">{c.val}</div>
+                    <p className="font-ibm font-medium text-sm text-foreground">{r.name}</p>
+                    <p className="label-caps text-muted-foreground">{r.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ TEAM ═══ */}
+      <section id="team" className="py-32 max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="mb-16">
+          <p className="label-caps text-primary mb-3">Команда</p>
+          <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)]">Люди за<br />проектами</h2>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
+          {TEAM.map((m, i) => (
+            <div key={i} className="bg-white p-8 lift group">
+              <div className="w-14 h-14 bg-muted flex items-center justify-center text-3xl mb-6 group-hover:bg-primary/10 transition-colors">
+                {m.emoji}
+              </div>
+              <h3 className="font-ibm font-medium text-foreground">{m.name}</h3>
+              <p className="label-caps text-primary mt-1 mb-4">{m.role}</p>
+              <p className="label-caps text-muted-foreground">Опыт: {m.exp}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══ BLOG ═══ */}
+      <section id="blog" className="py-32 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
+            <div>
+              <p className="label-caps text-primary mb-3">Журнал</p>
+              <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)]">Полезное<br />о ремонте</h2>
+            </div>
+            <a href="#" className="label-caps text-primary flex items-center gap-2 hover:gap-4 transition-all">
+              Все статьи <Icon name="ArrowRight" size={12} />
+            </a>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-px bg-border">
+            {BLOG.map((b, i) => (
+              <div key={i} className="bg-white p-8 lift group cursor-pointer flex flex-col">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="label-caps text-primary">{b.tag}</span>
+                  <span className="label-caps text-muted-foreground">{b.read}</span>
+                </div>
+                <h3 className="font-cormorant text-2xl font-light text-foreground leading-snug flex-1 group-hover:text-primary transition-colors">{b.title}</h3>
+                <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                  <span className="label-caps text-muted-foreground">{b.date}</span>
+                  <Icon name="ArrowUpRight" size={14} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ PROMO ═══ */}
+      <section id="promo" className="py-32 max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="mb-16">
+          <p className="label-caps text-primary mb-3">Акции</p>
+          <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)]">Выгодные<br />предложения</h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-px bg-border">
+          <div className="bg-foreground p-10 flex flex-col">
+            <div className="flex items-start justify-between mb-8">
+              <Icon name="Gift" size={28} className="text-primary" />
+              <span className="label-caps text-white/50 border border-white/20 px-3 py-1.5">До 30 апреля</span>
+            </div>
+            <h3 className="font-cormorant text-3xl font-light text-white mb-4">Дизайн-проект в подарок</h3>
+            <p className="font-ibm font-light text-white/60 text-sm leading-relaxed mb-8">
+              При заказе ремонта от 50 м² — разработка дизайн-проекта бесплатно. Экономия до 60 000 ₽.
+            </p>
+            <a href="#contacts" className="mt-auto btn-red inline-flex items-center gap-3 px-6 py-3.5 label-caps text-white self-start">
+              <span>Узнать подробности</span>
+              <Icon name="ArrowRight" size={12} />
+            </a>
+          </div>
+
+          <div className="bg-white p-10 flex flex-col border border-border">
+            <div className="flex items-start justify-between mb-8">
+              <Icon name="Percent" size={28} className="text-primary" />
+              <span className="label-caps text-muted-foreground border border-border px-3 py-1.5">Постоянно</span>
+            </div>
+            <h3 className="font-cormorant text-3xl font-light text-foreground mb-4">Скидка 10% повторным клиентам</h3>
+            <p className="font-ibm font-light text-muted-foreground text-sm leading-relaxed mb-8">
+              Обратились снова или привели друга — 10% скидка на следующий заказ автоматически.
+            </p>
+            <a href="#contacts" className="mt-auto btn-outline inline-flex items-center gap-3 px-6 py-3.5 label-caps self-start">
+              <span>Узнать подробности</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ ABOUT ═══ */}
+      <section id="about" className="py-32 bg-foreground text-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div>
+              <p className="label-caps text-primary mb-6">О нас</p>
+              <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)] text-white mb-10">
+                Делаем ремонт,<br />а не просто<br /><em className="text-primary not-italic">красим стены.</em>
+              </h2>
+              <p className="font-ibm font-light text-white/60 leading-relaxed mb-6">
+                Компания МАСТЕР работает с 2014 года. За это время — более 800 проектов. От косметики до полной реконструкции коммерческих помещений.
+              </p>
+              <p className="font-ibm font-light text-white/60 leading-relaxed mb-10">
+                Фиксированная смета, прозрачный процесс, сдача в срок. Аванс не более 30%, финальный расчёт после вашей приёмки.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: "Award",    text: "Лицензированные специалисты" },
+                  { icon: "TrendingUp", text: "Работаем с 2014 года" },
+                  { icon: "Shield",   text: "Гарантия на все работы" },
+                  { icon: "FileText", text: "Официальный договор" },
+                ].map(f => (
+                  <div key={f.text} className="flex items-center gap-3 border border-white/10 p-4">
+                    <Icon name={f.icon} size={16} className="text-primary shrink-0" />
+                    <span className="font-ibm font-light text-sm text-white/70">{f.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-px bg-white/10">
+              {[
+                { v: "800+", l: "Проектов завершено" },
+                { v: "12",   l: "Лет на рынке" },
+                { v: "98%",  l: "Рекомендуют нас" },
+                { v: "3",    l: "Года гарантии" },
+              ].map(s => (
+                <div key={s.l} className="bg-foreground p-8 text-center">
+                  <div className="font-cormorant text-5xl font-light text-primary mb-2">{s.v}</div>
+                  <p className="label-caps text-white/40">{s.l}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ CONTACTS ═══ */}
+      <section id="contacts" className="py-32 max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="grid lg:grid-cols-2 gap-20 items-start">
+          <div>
+            <p className="label-caps text-primary mb-6">Контакты</p>
+            <h2 className="display text-[clamp(2.5rem,5vw,4.5rem)] mb-10">
+              Начнём<br />разговор?
+            </h2>
+            <p className="font-ibm font-light text-muted-foreground mb-10 leading-relaxed">
+              Оставьте заявку — ответим в течение 15 минут. Выезд мастера на замер бесплатно.
+            </p>
+            <div className="space-y-6">
+              {[
+                { icon: "Phone",  l: "Телефон",      v: "+7 (999) 123-45-67" },
+                { icon: "Mail",   l: "Email",         v: "info@master-remont.ru" },
+                { icon: "MapPin", l: "Адрес",         v: "Москва, ул. Строителей, 15" },
+                { icon: "Clock",  l: "Режим работы",  v: "Пн–Вс, 8:00–20:00" },
+              ].map(c => (
+                <div key={c.l} className="flex items-center gap-4 pb-6 border-b border-border">
+                  <div className="w-9 h-9 bg-primary/8 flex items-center justify-center shrink-0">
+                    <Icon name={c.icon} size={15} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="label-caps text-muted-foreground">{c.l}</p>
+                    <p className="font-ibm font-medium text-foreground mt-0.5">{c.v}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white border border-border rounded-2xl p-8 shadow-sm">
-            <h3 className="font-oswald text-foreground text-2xl font-bold mb-6">Получить бесплатный расчёт</h3>
-            <div className="space-y-4">
+          {/* Form */}
+          <div className="border border-border p-10">
+            <p className="font-cormorant text-3xl font-light text-foreground mb-8">Бесплатный расчёт</p>
+            <div className="space-y-5">
+              {[
+                { l: "Имя", t: "text", p: "Александр" },
+                { l: "Телефон", t: "tel", p: "+7 (___) ___-__-__" },
+              ].map(f => (
+                <div key={f.l}>
+                  <label className="label-caps text-muted-foreground mb-2 block">{f.l}</label>
+                  <input type={f.t} placeholder={f.p}
+                    className="w-full bg-transparent border-b border-border py-3 font-ibm font-light text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary transition-colors" />
+                </div>
+              ))}
               <div>
-                <label className="font-golos text-sm text-muted-foreground mb-1.5 block">Ваше имя</label>
-                <input type="text" placeholder="Александр" className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 font-golos text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 transition-colors" />
-              </div>
-              <div>
-                <label className="font-golos text-sm text-muted-foreground mb-1.5 block">Телефон</label>
-                <input type="tel" placeholder="+7 (___) ___-__-__" className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 font-golos text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 transition-colors" />
-              </div>
-              <div>
-                <label className="font-golos text-sm text-muted-foreground mb-1.5 block">Тип помещения</label>
-                <select className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 font-golos text-foreground focus:outline-none focus:border-primary/50 transition-colors">
+                <label className="label-caps text-muted-foreground mb-2 block">Тип помещения</label>
+                <select className="w-full bg-transparent border-b border-border py-3 font-ibm font-light text-foreground focus:outline-none focus:border-primary transition-colors appearance-none">
                   <option value="">Выберите тип</option>
                   <option>Квартира</option>
                   <option>Офис</option>
@@ -662,68 +533,77 @@ export default function Index() {
                 </select>
               </div>
               <div>
-                <label className="font-golos text-sm text-muted-foreground mb-1.5 block">Комментарий</label>
-                <textarea rows={3} placeholder="Опишите объект и пожелания..." className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 font-golos text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 transition-colors resize-none" />
+                <label className="label-caps text-muted-foreground mb-2 block">Комментарий</label>
+                <textarea rows={3} placeholder="Опишите объект и пожелания..."
+                  className="w-full bg-transparent border-b border-border py-3 font-ibm font-light text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary transition-colors resize-none" />
               </div>
-              <button className="w-full bg-primary text-white font-golos font-bold py-4 rounded-xl hover:bg-primary/90 transition-all glow-red text-base flex items-center justify-center gap-2">
-                Отправить заявку
-                <Icon name="ArrowRight" size={18} />
-              </button>
-              <p className="font-golos text-xs text-muted-foreground text-center">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
+              <div className="pt-4">
+                <button className="w-full btn-red py-4 label-caps text-white flex items-center justify-center gap-3">
+                  <span>Отправить заявку</span>
+                  <Icon name="ArrowRight" size={13} />
+                </button>
+                <p className="label-caps text-muted-foreground text-center mt-4">
+                  Нажимая кнопку, вы принимаете политику конфиденциальности
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-border py-12 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+      {/* ═══ FOOTER ═══ */}
+      <footer className="border-t border-border py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                  <span className="font-oswald font-bold text-white text-sm">М</span>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-7 h-7 bg-primary flex items-center justify-center">
+                  <span className="font-ibm font-semibold text-white text-xs">М</span>
                 </div>
-                <span className="font-oswald font-bold text-xl tracking-widest text-foreground">МАСТЕР</span>
+                <span className="label-caps text-foreground tracking-[0.18em]">Мастер</span>
               </div>
-              <p className="font-golos text-muted-foreground text-sm leading-relaxed">Профессиональный ремонт под ключ с 2014 года. Более 800 реализованных проектов.</p>
+              <p className="font-ibm font-light text-muted-foreground text-sm leading-relaxed">
+                Профессиональный ремонт под ключ. 12 лет, 800+ проектов.
+              </p>
             </div>
             <div>
-              <h4 className="font-oswald text-foreground font-semibold mb-4 tracking-wider">Услуги</h4>
-              <ul className="space-y-2">
-                {["Ремонт квартир", "Офисный ремонт", "Ванные комнаты", "Дизайн интерьера"].map((s) => (
-                  <li key={s}><a href="#" className="font-golos text-muted-foreground text-sm hover:text-primary transition-colors">{s}</a></li>
+              <p className="label-caps text-foreground mb-5">Услуги</p>
+              <ul className="space-y-3">
+                {["Ремонт квартир", "Офисный ремонт", "Ванные комнаты", "Дизайн интерьера"].map(s => (
+                  <li key={s}><a href="#" className="font-ibm font-light text-muted-foreground text-sm hover:text-primary transition-colors">{s}</a></li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="font-oswald text-foreground font-semibold mb-4 tracking-wider">Компания</h4>
-              <ul className="space-y-2">
-                {navLinks.map((l) => (
-                  <li key={l.href}><a href={l.href} className="font-golos text-muted-foreground text-sm hover:text-primary transition-colors">{l.label}</a></li>
+              <p className="label-caps text-foreground mb-5">Компания</p>
+              <ul className="space-y-3">
+                {NAV.map(l => (
+                  <li key={l.href}><a href={l.href} className="font-ibm font-light text-muted-foreground text-sm hover:text-primary transition-colors">{l.label}</a></li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="font-oswald text-foreground font-semibold mb-4 tracking-wider">Контакты</h4>
+              <p className="label-caps text-foreground mb-5">Контакты</p>
               <div className="space-y-3">
                 {[
-                  { icon: "Phone", text: "+7 (999) 123-45-67" },
-                  { icon: "Mail", text: "info@master-remont.ru" },
-                  { icon: "MapPin", text: "Москва, ул. Строителей, 15" },
-                ].map((c) => (
-                  <p key={c.text} className="font-golos text-muted-foreground text-sm flex items-center gap-2">
-                    <Icon name={c.icon} size={14} className="text-primary" /> {c.text}
+                  { icon: "Phone",  t: "+7 (999) 123-45-67" },
+                  { icon: "Mail",   t: "info@master-remont.ru" },
+                  { icon: "MapPin", t: "Москва, ул. Строителей, 15" },
+                ].map(c => (
+                  <p key={c.t} className="font-ibm font-light text-muted-foreground text-sm flex items-center gap-2">
+                    <Icon name={c.icon} size={13} className="text-primary shrink-0" /> {c.t}
                   </p>
                 ))}
               </div>
             </div>
           </div>
-          <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="font-golos text-muted-foreground text-sm">© 2026 МАСТЕР. Все права защищены.</p>
-            <div className="flex gap-6">
-              <a href="#" className="font-golos text-muted-foreground text-sm hover:text-primary transition-colors">Политика конфиденциальности</a>
-              <a href="#" className="font-golos text-muted-foreground text-sm hover:text-primary transition-colors">Договор оферты</a>
+
+          <div className="h-px bg-border mb-8" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="label-caps text-muted-foreground">© 2026 Мастер. Все права защищены.</p>
+            <div className="flex gap-8">
+              <a href="#" className="label-caps text-muted-foreground hover:text-primary transition-colors">Политика конфиденциальности</a>
+              <a href="#" className="label-caps text-muted-foreground hover:text-primary transition-colors">Договор оферты</a>
             </div>
           </div>
         </div>
